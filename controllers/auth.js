@@ -12,11 +12,9 @@ const crearUsuario = (req, resp = response) => {
     });
 };
 
-const loginUsuario = (req, resp) => {
+const loginUsuario = (req, resp = response) => {
 
     const { email, password } = req.body;
-
-    console.log(email, password);
 
     return resp.json({
         ok: true,
@@ -24,7 +22,7 @@ const loginUsuario = (req, resp) => {
     });
 };
 
-const revalidarToken = (req, resp) => {
+const revalidarToken = (req, resp = response) => {
     return resp.json({
         ok: true,
         msg: 'Renew'
