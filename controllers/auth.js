@@ -52,14 +52,52 @@ const crearUsuario = async (req, resp = response) => {
 
 };
 
-const loginUsuario = (req, resp = response) => {
+const loginUsuario = async (req, resp = response) => {
 
     const { email, password } = req.body;
 
-    return resp.json({
-        ok: true,
-        msg: 'Login de usuario /'
-    });
+    try {
+
+        // verificar si email existe
+        const dbUser = await Usuario.findOne({ email });
+
+        if (!dbUser) {
+            return resp.status(400).json({
+                ok: false,
+                msg: 'Credenciales no son validas'
+            });
+        }
+
+        // verificar match de la contraseña
+        const validPassword = bcrypt.compareSync(password, dbUser.password);
+
+        if (!validPassword) {
+            return resp.status(400).json({
+                ok: false,
+                msg: 'Credenciales no son validas'
+            });
+        }
+
+        // verificar JWT
+        const token = await generarJWT(dbUser.id, dbUser.name);
+
+        // respuesta del servicio
+        return resp.json({
+            ok: true,
+            uid: dbUser.id,
+            name: dbUser.name,
+            token
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return resp.status(500).json({
+            ok: false,
+            msg: 'hable con el administrador'
+        })
+    }
 };
 
 const revalidarToken = (req, resp = response) => {
