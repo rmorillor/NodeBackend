@@ -26,12 +26,14 @@ const crearHeroe = async (req, resp = response) => {
         // Generar respuesta exitosa
         return resp.status(201).json({
             ok: true,
+            _id: dbHeroe._id,
             id: dbHeroe.id,
             superhero: dbHeroe.superhero,
             publisher: dbHeroe.publisher,
             alter_ego: dbHeroe.alter_ego,
             first_appearance: dbHeroe.first_appearance,
-            characters: dbHeroe.characters
+            characters: dbHeroe.characters,
+            alt_img: dbHeroe.alt_img
         });
 
     } catch (error) {
@@ -45,6 +47,94 @@ const crearHeroe = async (req, resp = response) => {
     }
 
 };
+
+const editarHeroe = async (req, resp = response) => {
+
+    const { id } = req.body;
+
+    try {
+
+        // Verificar si no existe un usuario igual
+        const heroe = await Heroe.findOne({ id });
+
+        if (!heroe) {
+            return resp.status(400).json({
+                ok: false,
+                msg: 'El heroe no existe'
+            });
+        }
+
+        // Crear instancia heroe con el modelo
+        const dbHeroe = new Heroe(req.body);
+
+        // Crear heroe base de datos
+        await dbHeroe.updateOne(dbHeroe);
+
+        // Generar respuesta exitosa
+        return resp.status(201).json({
+            ok: true,
+            _id: dbHeroe._id,
+            id: dbHeroe.id,
+            superhero: dbHeroe.superhero,
+            publisher: dbHeroe.publisher,
+            alter_ego: dbHeroe.alter_ego,
+            first_appearance: dbHeroe.first_appearance,
+            characters: dbHeroe.characters,
+            alt_img: dbHeroe.alt_img
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return resp.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+
+};
+
+const eliminarHeroe = async (req, resp = response) => {
+
+    const _id = req.params.id;
+
+    try {
+
+        // Verificar si existe un usuario igual
+        const heroe = await Heroe.findOne({ _id });
+
+        console.log(heroe)
+
+        if (!heroe) {
+            return resp.status(400).json({
+                ok: false,
+                msg: 'El heroe no existe'
+            });
+        }
+
+        // Crear instancia heroe con el modelo
+        const dbHeroe = new Heroe(heroe);
+
+        // Crear heroe base de datos
+        await dbHeroe.deleteOne(dbHeroe);
+
+        // Generar respuesta exitosa
+        return resp.status(201).json({
+            ok: true
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return resp.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+
+}
 
 const obtenerHeroes = async (req, resp = response) => {
 
@@ -79,6 +169,7 @@ const obtenerHeroePorId = async (req, resp = response) => {
 
         // Generar respuesta exitosa
         return resp.status(201).json({
+            _id: dbHeroe._id,
             id: dbHeroe.id,
             superhero: dbHeroe.superhero,
             publisher: dbHeroe.publisher,
@@ -105,7 +196,6 @@ const buscarHeroe = async (req, resp = response) => {
 
         const search = req.params.search
 
-        //db.users.find( { 'name' : { '$regex' : yourvalue, '$options' : 'i' } } )
         const dbHeroe = await Heroe.find({ 'superhero': { '$regex': search, '$options': 'i' } });
 
         // Generar respuesta exitosa
@@ -129,5 +219,7 @@ module.exports = {
     crearHeroe,
     obtenerHeroes,
     obtenerHeroePorId,
-    buscarHeroe
+    buscarHeroe,
+    editarHeroe,
+    eliminarHeroe
 };

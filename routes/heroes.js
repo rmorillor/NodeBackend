@@ -5,13 +5,12 @@ const { check } = require('express-validator');
 const { validarCampos } = require('../middlewares/validar-campos');
 const { validarJWT } = require('../middlewares/validar-jwt');
 
-const { crearHeroe, obtenerHeroes, obtenerHeroePorId, buscarHeroe } = require('../controllers/heroe');
+const { crearHeroe, obtenerHeroes, obtenerHeroePorId, buscarHeroe, editarHeroe, eliminarHeroe } = require('../controllers/heroe');
 
 const router = Router();
 
 // Crear un nuevo heroe
 router.post('/newheroe', [
-    check('id', 'El id es obligatorio').not().isEmpty(),
     check('superhero', 'El super heroe es obligatorio').not().isEmpty(),
     check('publisher', 'La casa publicadora es obligatoria').not().isEmpty(),
     check('alter_ego', 'El alter ego es obligatorio').not().isEmpty(),
@@ -19,6 +18,14 @@ router.post('/newheroe', [
     validarJWT,
     validarCampos
 ], crearHeroe);
+
+// Editar un nuevo heroe
+router.put('/editheroe', [
+    check('id', 'El id es obligatorio').not().isEmpty(), validarJWT], editarHeroe);
+
+// Eliminar un nuevo heroe
+router.delete('/deleteheroe/:id', [
+    check('id', 'El id es obligatorio').not().isEmpty(), validarJWT], eliminarHeroe);
 
 // Obtener listado de heroes
 router.get('/getheroes', [validarJWT], obtenerHeroes);
