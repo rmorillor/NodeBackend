@@ -104,8 +104,6 @@ const eliminarHeroe = async (req, resp = response) => {
         // Verificar si existe un usuario igual
         const heroe = await Heroe.findOne({ _id });
 
-        console.log(heroe)
-
         if (!heroe) {
             return resp.status(400).json({
                 ok: false,
